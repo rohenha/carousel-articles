@@ -1,11 +1,11 @@
 <?php
-class Shortcode{
+class SCA_Shortcode{
 
 	public function __construct(){
-		add_shortcode('carousel-posts', array($this, 'create_carousel_posts'));
+		add_shortcode('carousel-posts', array($this, 'SCA_create_carousel_posts'));
 	}
 
-	public function create_carousel_posts($atts, $content){
+	public function SCA_create_carousel_posts($atts, $content){
 		// Attributes
 		$atts = shortcode_atts(
 			array(

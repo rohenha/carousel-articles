@@ -1,5 +1,5 @@
 <?php
-class Slider_Widget extends WP_Widget {
+class SCA_Widget extends WP_Widget {
 
 	public function __construct(){
 		parent::__construct('slider-articles', 'Slider d\'articles', array('description' => 'Un slider pour afficher un slider avec les articles'));

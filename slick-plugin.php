@@ -8,45 +8,45 @@ Author: Romain Breton
 Author URI: http://www.romain-breton.com
 License: GPL2
 */
-include_once plugin_dir_path( __FILE__ ).'enqueue-styles.php';
-include_once plugin_dir_path( __FILE__ ).'meta-box.php';
-include_once plugin_dir_path( __FILE__ ).'columns.php';
-include_once plugin_dir_path( __FILE__ ).'shortcode.php';
-include_once plugin_dir_path( __FILE__ ).'slider-widget.php';
+include_once plugin_dir_path( __FILE__ ).'inc/SCA_enqueue-styles.php';
+include_once plugin_dir_path( __FILE__ ).'inc/SCA_meta-box.php';
+include_once plugin_dir_path( __FILE__ ).'inc/SCA_columns.php';
+include_once plugin_dir_path( __FILE__ ).'inc/SCA_shortcode.php';
+include_once plugin_dir_path( __FILE__ ).'inc/SCA_widget.php';
 
-class Slick_Plugin{
+class SCA_Plugin{
 	public function __construct(){
 		// Enable the use of shortcodes in text widgets.
 		add_filter( 'widget_text', 'do_shortcode' );
-		new Enqueue_Styles();
+		new SCA_Enqueue_Styles();
 		// new Meta_Box();
-		new Columns();
-		new Shortcode();
-		new Slider_Widget();
-		add_action('widgets_init', function(){register_widget('Slider_Widget');});
+		new SCA_Columns();
+		new SCA_Shortcode();
+		new SCA_Widget();
+		add_action('widgets_init', function(){register_widget('SCA_Widget');});
 	}
 }
-new Slick_Plugin();
+new SCA_Plugin();
 
 // Setup meta box on post editor screen
-add_action( 'load-post.php', 'article_carousel_post_meta_boxes_setup' );
-add_action( 'load-post-new.php', 'article_carousel_post_meta_boxes_setup' );
+add_action( 'load-post.php', 'SCA_carousel_post_meta_boxes_setup' );
+add_action( 'load-post-new.php', 'SCA_carousel_post_meta_boxes_setup' );
 /* Save post meta on the 'save_post' hook. */
-add_action( 'save_post', 'carousel_save_post_class_meta', 10, 2 );
+add_action( 'save_post', 'SCA_carousel_save_post_class_meta', 10, 2 );
 /* Meta box setup function. */
-function article_carousel_post_meta_boxes_setup() {
+function SCA_carousel_post_meta_boxes_setup() {
   /* Add meta boxes on the 'add_meta_boxes' hook. */
-  add_action( 'add_meta_boxes', 'article_carousel_add_post_meta_boxes' );
+  add_action( 'add_meta_boxes', 'SCA_carousel_add_post_meta_boxes' );
   /* Save post meta on the 'save_post' hook. */
-  add_action( 'save_post', 'carousel_save_post_class_meta', 10, 2 );
+  add_action( 'save_post', 'SCA_carousel_save_post_class_meta', 10, 2 );
 }
 
 /* Create one or more meta boxes to be displayed on the post editor screen. */
-function article_carousel_add_post_meta_boxes() {
+function SCA_carousel_add_post_meta_boxes() {
   add_meta_box(
     'article-in-carousel',      // Unique ID
     esc_html__( 'Carousel', 'example' ),    // Title
-    'article_carousel_post_class_meta_box',   // Callback function
+    'SCA_carousel_post_class_meta_box',   // Callback function
     'post',         // Admin page (or post type)
     'side',         // Context
     'high'         // Priority
@@ -54,7 +54,7 @@ function article_carousel_add_post_meta_boxes() {
 }
 
 /* Display the post meta box. */
-function article_carousel_post_class_meta_box( $object, $box ) {
+function SCA_carousel_post_class_meta_box( $object, $box ) {
 	global $post;
 	wp_nonce_field( basename( __FILE__ ), 'article_carousel_post_class_nonce' );
 	/* Check if the current user has permission to edit the post. */
@@ -69,14 +69,14 @@ function article_carousel_post_class_meta_box( $object, $box ) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-add_action( 'bulk_edit_custom_box', 'carousel_quick_edit_custom_box', 10, 2 );
-add_action( 'quick_edit_custom_box', 'carousel_quick_edit_custom_box', 10, 2 );
-function carousel_quick_edit_custom_box( $column_name, $post_type ) {
+add_action( 'bulk_edit_custom_box', 'SCA_article_quick_edit_custom_box', 10, 2 );
+add_action( 'quick_edit_custom_box', 'SCA_article_quick_edit_custom_box', 10, 2 );
+function SCA_article_quick_edit_custom_box( $column_name, $post_type ) {
    switch ( $post_type ) {
       case 'post':
          switch( $column_name ) {
             case 'post_carousel':
-               article_carousel_post_class_meta_box();
+               SCA_carousel_post_class_meta_box();
                break;
          }
          break;
@@ -88,7 +88,7 @@ function carousel_quick_edit_custom_box( $column_name, $post_type ) {
 // Créer le meta box
 ///////////////////////////////////////////////////////////////////////////////////
 /* Save the meta box's post metadata. */
-function carousel_save_post_class_meta( $post_id, $post ) {
+function SCA_carousel_save_post_class_meta( $post_id, $post ) {
   /* Verify the nonce before proceeding. */
   if ( !isset( $_POST['article_carousel_post_class_nonce'] ) || !wp_verify_nonce( $_POST['article_carousel_post_class_nonce'], basename( __FILE__ ) ) )
     return $post_id;
@@ -109,8 +109,8 @@ function carousel_save_post_class_meta( $post_id, $post ) {
 }
 
 /* Filter the post class hook with our custom post class function. */
-add_filter( 'post_class', 'carousel_toggle' );
-function carousel_toggle( $classes ) {
+add_filter( 'post_class', 'SCA_carousel_toggle' );
+function SCA_carousel_toggle( $classes ) {
   $post_id = get_the_ID();
   if ( !empty( $post_id ) ) {
     $post_class = get_post_meta( $post_id, 'carousel_toggle', true );
